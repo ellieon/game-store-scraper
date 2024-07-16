@@ -1,0 +1,1 @@
+worker: npm install && npx puppeteer browsers install chrome &&  npm run start:bot-prod
