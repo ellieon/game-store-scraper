@@ -1,4 +1,4 @@
-# cex-daily-scraper
+# game-store-scraper
 
 ## About
 
