@@ -17,7 +17,7 @@ This is a mono-repo (using lerna) containing the entirety of the discord bot sof
 ### Database
 * The `20240610130208-settings-update.js` file seeds the inital settings for the database, here you can define the categories, stores, and user you wish to 
 recieve the daily message before you setup the bot,  you just need to change the constants defined at the top to tailor what you want the bot to get for you
-* `CATEGORIES` - There are some defined by default, each of  these requires the id of the category and the store name as defined in the query string when using the CEX website
+* `CATEGORIES` - There are some defined by default, each of  these requires the id of the category and the store name as defined in the query string when using the website
 * `STORES` -  The list of stores that will be searched, update these to match  the query string of the stores you want to search
 * `USER` - The discord ID of the user to get the daily updates from the bot
 * `MORNING_TIME`/`EVENING_TIME` - A HH:mm:ss string of when you want the bot to  run of  a morning and evening each day
