@@ -133,6 +133,8 @@ export class CexFetchService {
     private async getNextPage(browser: any, pageNo: number, store: string, category: Category){
         const URL = this.buildUrl(store, category, pageNo)   
         const page = await browser.newPage()
+        const customUserAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0';
+        await page.setUserAgent(customUserAgent);
         await page.goto(URL)
         await page.waitForSelector('.product-title')
         return page 
