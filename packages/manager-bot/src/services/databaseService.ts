@@ -60,6 +60,16 @@ export class DatabaseService {
         
     }
 
+    public async setScanLock(lock: boolean): Promise<void> {
+        await this.pool.query("UPDATE settings SET value = $1 WHERE key = 'scan_lock'", [lock ? 'true' : 'false'])
+    }
+
+    public async getScanLock(): Promise<boolean> {
+        const res = await this.pool.query("SELECT value FROM settings WHERE key = 'scan_lock'")
+        const value = res.rows[0].value
+        return value === 'true'
+    }
+
     public async getUserId(): Promise<string>{
         const res = await this.pool.query("SELECT value FROM settings WHERE key = 'user'")
         return res.rows[0].value

@@ -34,8 +34,6 @@ export class CexFetchService {
 
 
     public async fetchNewGamesForStore(store: string, categories: Category[]): Promise<StoreEntry> {
-
-
         const storeStock: StoreEntry = {
             name: store,
             stock: []
@@ -132,13 +130,25 @@ export class CexFetchService {
     
     private async getNextPage(browser: any, pageNo: number, store: string, category: Category){
         const URL = this.buildUrl(store, category, pageNo)   
+        console.log(`Getting data for category ${category.name} page ${pageNo} using url ${URL}`)
         const page = await browser.newPage()
         const customUserAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0';
         await page.setUserAgent(customUserAgent);
         await page.goto(URL)
         await page.waitForSelector('.product-title')
+        await page.waitForSelector('.ais-CurrentRefinements-categoryLabel')
+        //Shouldn't need this sleep, but for some reason the filter doesn't apply until after the page is fully loaded and 
+        //I'm not 100% sure of a way to detect that the filter has applied
+        await this.sleep(1000) 
+        
         return page 
     }
+
+    private async sleep(ms: number) {
+        return new Promise((resolve) => {
+            setTimeout(resolve, ms);
+    });
+}
 
     private buildUrl(store: string, category: any, page: number = 1): string {
         return url.replace('<store>', store).replace('<lineid>', category.id).replace('<linename>', category.name).replace('<page>', page.toString());
@@ -147,10 +157,13 @@ export class CexFetchService {
     private async getPageCount(page: any): Promise<number>{
         
         let count: any = await page.$eval('.ais-Stats .text-base', (element: any) => {return element.textContent});
+        console.log(count)
         let perPage = (await page.$$('.search-product-card')).length;
         count = count.replace(',', '')
-        
-        return Math.ceil(parseInt(count) / perPage)
+        const pages = Math.ceil(parseInt(count) / perPage)
+        console.log(`${pages} pages`)
+
+        return pages
         
     }
 

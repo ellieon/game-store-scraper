@@ -8,9 +8,7 @@ const CATEGORIES = [
   { id: 59, name: "DS"}, 
   { id: 70, name: "3DS"}, 
   { id: 18, name: "Retro Games"},
-  { id: 63, name: "Xbox 360"},
-  { id: 62, name: "Playstation 3"},
-  { id: 61, name: "Playstation 2"}
+  { id: 65, name: "PSP"}
 ]
 
 const STORES = [
@@ -37,6 +35,7 @@ exports.up = function(db) {
   db.insert('settings', ['key', 'value'], ['user', USER]);
   db.insert('settings', ['key', 'value'], ['morning_time', MORNING_TIME]);
   db.insert('settings', ['key', 'value'], ['evening_time', EVENING_TIME]);
+  db.insert('settings', ['key', 'value'], ['scan_lock', 'false']);
   
   return null;
 };
@@ -47,6 +46,7 @@ exports.down = function(db) {
   db.runSql(`delete from settings where key='user'`);
   db.runSql(`delete from settings where key='morning_time'`);
   db.runSql(`delete from settings where key='evening_time'`);
+  db.runSql(`delete from settings where key='scan_lock'`);
   return null;
 };
 

@@ -8,20 +8,46 @@ export default (client: Client): void => {
         console.log('Bot is ready!');
         const databaseService = new DatabaseService();
         setInterval(async () => {
-            const scanDate = await databaseService.getNextScanDate();
-            if(scanDate > new Date()){
-            } else {
-                try {
-                    console.log("Starting next scan");
-                    await databaseService.setNextScanDate();
-                    await getGamesAndMessage(client, databaseService);
-                    console.log("Scan complete");
-                } catch (error) {
-                    console.log(error);
+            const lock = await databaseService.getScanLock()
+            if(!lock)
+            {
+                const scanDate = await databaseService.getNextScanDate();
+                if(scanDate > new Date()){
+                } else {
+                    try {
+                        await databaseService.setScanLock(true)
+                        console.log("Starting next scan");
+                        await databaseService.setNextScanDate();
+                        await getGamesAndMessage(client, databaseService);
+                        await databaseService.setScanLock(false)
+                        console.log("Scan complete");
+                    } catch (error) {
+                        console.log(error);
+                    }
                 }
             }
         }, 30000);
       });
+
+    client.on('messageCreate', async(message) => {
+        if(message.cleanContent == 'scrape') {
+            try {
+                const databaseService = new DatabaseService();
+                const lock = await databaseService.getScanLock()
+                if(!lock)
+                {
+                    console.log('Starting a scan');
+                    await databaseService.setScanLock(true)
+                    await getGamesAndMessage(client, databaseService);
+                    await databaseService.setScanLock(false)
+                } else {
+                    await message.reply('Unable to scan, scan is currently in progress')
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        }
+    });
 };
 
 async function getGamesAndMessage(client: Client, databaseService: DatabaseService) {
