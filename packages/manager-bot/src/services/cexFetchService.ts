@@ -9,7 +9,9 @@ const url = 'https://uk.webuy.com/search?page=<page>&productLineId=<lineid>&prod
 export class CexFetchService {
     constructor(
         private databaseService: DatabaseService = new DatabaseService(),
-    ){};
+        private currentCategoryCountTotal = 0,
+    ){
+    };
 
     public async getDiffForStore(store: string): Promise<StoreEntry > {
         const categories = await this.databaseService.getCategories();
@@ -74,7 +76,7 @@ export class CexFetchService {
                 'args' : args
               });
 
-            const firstPage = await this.getNextPageRetry(3, browser, 1, store, category);
+            const firstPage = await this.getFirstPage(browser, store, category);
 
             games.push(...await this.getGameDataFromPage(firstPage, store, category));
             const pageCount = await this.getPageCount(firstPage);
@@ -127,7 +129,33 @@ export class CexFetchService {
         return lastPage > currentPage;
     }
 
-    
+    private async getFirstPage(browser: any, store: string, category: Category){
+        //First get the page with no filters applied so we can determine the total number of games in the category
+        let URL = this.buildUrl('', category, 1)   
+        console.log(`Getting data for category ${category.name} page 1 using url ${URL}`)
+        const page = await browser.newPage()
+        const customUserAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0';
+        await page.setUserAgent(customUserAgent);
+        await page.goto(URL)
+        await page.waitForSelector('.product-title')
+        this.currentCategoryCountTotal = await page.$eval('.ais-Stats .text-base', (element: any) => {return element.textContent});
+        console.log(`Total count is ${this.currentCategoryCountTotal}`)
+
+        //Then we get the page again, with the store filter this time
+        URL = this.buildUrl(store, category, 1)
+        await page.goto(URL)
+        await page.waitForSelector('.product-title')
+        let count = await page.$eval('.ais-Stats .text-base', (element: any) => {return element.textContent});
+        while (count == this.currentCategoryCountTotal)
+        {  
+            await this.sleep(10)
+            count = await page.$eval('.ais-Stats .text-base', (element: any) => {return element.textContent});
+        }
+        
+        return page 
+    }
+
+
     private async getNextPage(browser: any, pageNo: number, store: string, category: Category){
         const URL = this.buildUrl(store, category, pageNo)   
         console.log(`Getting data for category ${category.name} page ${pageNo} using url ${URL}`)
@@ -136,10 +164,13 @@ export class CexFetchService {
         await page.setUserAgent(customUserAgent);
         await page.goto(URL)
         await page.waitForSelector('.product-title')
-        await page.waitForSelector('.ais-CurrentRefinements-categoryLabel')
-        //Shouldn't need this sleep, but for some reason the filter doesn't apply until after the page is fully loaded and 
-        //I'm not 100% sure of a way to detect that the filter has applied
-        await this.sleep(1000) 
+
+        let count = await page.$eval('.ais-Stats .text-base', (element: any) => {return element.textContent});
+        while (count == this.currentCategoryCountTotal)
+        {  
+            await this.sleep(10)
+            count = await page.$eval('.ais-Stats .text-base', (element: any) => {return element.textContent});
+        }
         
         return page 
     }
