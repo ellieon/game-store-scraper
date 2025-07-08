@@ -1,4 +1,4 @@
-import {  Client, bold, italic, underscore, } from "discord.js";
+import { Client, bold, italic, underscore } from "discord.js";
 import { CexFetchService } from "../services/cexFetchService";
 import { DatabaseService } from "../services/databaseService";
 import { StoreEntry } from "../types/storeEntry";
@@ -32,14 +32,16 @@ export default (client: Client): void => {
     client.on('messageCreate', async(message) => {
         if(message.cleanContent == 'scrape') {
             try {
-                const databaseService = new DatabaseService();
+                const databaseService = new DatabaseService()
                 const lock = await databaseService.getScanLock()
                 if(!lock)
                 {
-                    console.log('Starting a scan');
+                    console.log('Starting a scan')
                     await databaseService.setScanLock(true)
-                    await getGamesAndMessage(client, databaseService);
+                    await message.reply('Scrape started.')
+                    await getGamesAndMessage(client, databaseService)
                     await databaseService.setScanLock(false)
+                    await message.reply('Scrape complete.')
                 } else {
                     await message.reply('Unable to scan, scan is currently in progress')
                 }
@@ -77,6 +79,7 @@ function buildMessage(store: StoreEntry) {
     }
     return message;
 }
+
 function splitString(str: string, length = 1999) {
     var chunks = [];
     var index = 0;

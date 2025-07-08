@@ -130,7 +130,11 @@ export class CexFetchService {
     }
 
     private async getFirstPage(browser: any, store: string, category: Category){
-        //First get the page with no filters applied so we can determine the total number of games in the category
+        //Theres an issue where the page will load fully showing all results without the filter applied and then the filter is applied shortly after,
+        //I can't find an easy way to detect when this happens, so the workaround is to determine the total results without filters, and compare the number of 
+        //results currently on the page until we see that number is different than the total
+
+        //First get the page with no filters applied so we can determine the total number of results in the category
         let URL = this.buildUrl('', category, 1)   
         console.log(`Getting data for category ${category.name} page 1 using url ${URL}`)
         const page = await browser.newPage()
@@ -146,6 +150,8 @@ export class CexFetchService {
         await page.goto(URL)
         await page.waitForSelector('.product-title')
         let count = await page.$eval('.ais-Stats .text-base', (element: any) => {return element.textContent});
+
+        //Wait for the number of results to differ from the known total, then we know the filter has applied
         while (count == this.currentCategoryCountTotal)
         {  
             await this.sleep(10)
@@ -154,7 +160,6 @@ export class CexFetchService {
         
         return page 
     }
-
 
     private async getNextPage(browser: any, pageNo: number, store: string, category: Category){
         const URL = this.buildUrl(store, category, pageNo)   
