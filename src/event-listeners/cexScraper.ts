@@ -37,8 +37,8 @@ export default (client: Client): void => {
                 if(!lock)
                 {
                     console.log('Starting a scan')
-                    await databaseService.setScanLock(true)
                     await message.reply('Scrape started.')
+                    await databaseService.setScanLock(true)
                     await getGamesAndMessage(client, databaseService)
                     await databaseService.setScanLock(false)
                     await message.reply('Scrape complete.')

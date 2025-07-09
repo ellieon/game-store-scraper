@@ -1,22 +1,34 @@
 {
-  "name": "root",
-  "private": true,
-  "workspaces": [
-    "packages/*"
-  ],
+  "name": "scraper-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start:bot": "db-migrate up && nodemon --watch 'src/**/*.ts' --ext ts,tsx,js,json --exec 'ts-node' src/index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "db:create": "db-migrate up",
+    "bot:prod": "tsc && node ./src/index.js",
+    "build": "tsc",
+    "build:dev": "tsc --noEmit",
+    "clean": "tsc --build --clean"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
+    "@types/node": "^20.11.17",
+    "@types/pg": "^8.11.0",
     "axios": "^1.6.8",
-    "lerna": "^8.1.2",
+    "db-migrate": "^0.11.14",
+    "db-migrate-pg": "^1.5.2",
+    "discord.js": "^14.14.1",
+    "dotenv": "^17.1.0",
+    "pg": "^8.16.3",
     "puppeteer": "^22.7.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   },
-  "scripts": {
-    "start:bot": "lerna run db:create && lerna run start:bot",
-    "start:bot-prod": "lerna run build && lerna run db:create && lerna run bot:prod",
-    "build": "lerna run build",
-    "build:dev": "lerna run build:dev",
-    "db:create": "lerna run db:create",
-    "clean": "lerna run clean",
-    "heroku-postbuild": "mkdir ./.cache && mv /app/.cache/puppeteer ./.cache"
+  "devDependencies": {
+    "nodemon": "^3.0.3"
   }
 }
