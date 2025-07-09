@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start:bot": "db-migrate up && nodemon --watch 'src/**/*.ts' --ext ts,tsx,js,json --exec 'ts-node' src/index.ts",
+    "start:bot": "db-migrate up && nodemon --watch 'src/**/*.ts' --ext ts,tsx,js,json --exec 'npx ts-node' src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "db:create": "db-migrate up",
     "bot:prod": "tsc && node ./src/index.js",
@@ -26,9 +26,10 @@
     "pg": "^8.16.3",
     "puppeteer": "^22.7.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "nodemon": "^3.0.3"
   },
   "devDependencies": {
-    "nodemon": "^3.0.3"
+    
   }
 }

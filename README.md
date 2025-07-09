@@ -2,20 +2,14 @@
 
 ## About
 
-This is a mono-repo (using lerna) containing the entirety of the discord bot software. The individual packages in the 'packages' directory are as follows:
-
-* `scraper-database` - Manages database seeding and migrations
-* `scraper-bot` - All of the code for running the actual bot itself
-
 ## Development
 ### Prerequisites
 * A discord developer account, with an application setup, you will need the bot secret token (and to invite the bot to a server to test)
 * Docker to run the local database
 * node.js and npm, (I use 20.11.0, but it shouldn't be too picky)
-* Lerna `npm install -g lerna`
 
 ### Database
-* The `20240610130208-settings-update.js` file seeds the inital settings for the database, here you can define the categories, stores, and user you wish to 
+* The `20240610130208-settings-update.js` file in `migrations` seeds the inital settings for the database, here you can define the categories, stores, and user you wish to 
 recieve the daily message before you setup the bot,  you just need to change the constants defined at the top to tailor what you want the bot to get for you
 * `CATEGORIES` - There are some defined by default, each of  these requires the id of the category and the store name as defined in the query string when using the website
 * `STORES` -  The list of stores that will be searched, update these to match  the query string of the stores you want to search
