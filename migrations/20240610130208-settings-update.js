@@ -15,7 +15,7 @@ const STORES = [
   'StoreA', 'StoreB', 'StoreC'
 ]
 
-const USER = '<discord user id>'
+const USER = process.env['DISCORD_USER_ID'];
 const MORNING_TIME = '9:30:00'
 const EVENING_TIME = '14:00:00'
 
